@@ -1,0 +1,28 @@
+{
+  "name": "leto-discord-bot",
+  "version": "1.0.0",
+  "description": "A bot for the LetoDoesArt Discord server, featuring some playful features.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomGriebe/leto-discord-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TomGriebe/leto-discord-bot/issues"
+  },
+  "homepage": "https://github.com/TomGriebe/leto-discord-bot#readme",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
