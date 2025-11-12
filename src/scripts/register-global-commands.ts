@@ -6,8 +6,9 @@ async function registerGlobalCommands() {
   const rest = new REST().setToken(token);
 
   try {
+    const body = commands.map((cmd) => cmd.data.toJSON());
     await rest.put(Routes.applicationCommands(applicationId), {
-      body: [commands.map((cmd) => cmd.data.toJSON())],
+      body,
     });
   } catch (error) {
     console.error(`Failed to register commands: ${error}`);
