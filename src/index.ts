@@ -1,5 +1,9 @@
-function main() {
-  console.log("Hello World!");
-}
+import {
+  addCommandHandlers,
+  createGatewayClient,
+  runGateway,
+} from "./gateway/client";
 
-main();
+const client = createGatewayClient();
+addCommandHandlers(client);
+runGateway(client);
