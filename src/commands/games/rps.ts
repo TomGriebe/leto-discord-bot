@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import { SlashCommand } from "../SlashCommand";
 import { randomInt } from "crypto";
+import { BetAmountOption } from "./shared";
 
 type RPSAnswer = "rock" | "paper" | "scissors";
 
@@ -14,16 +15,9 @@ export const rpsCommand: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("rps")
     .setDescription("Play rock, paper, scissors with me!")
-    .addIntegerOption((option) =>
-      option
-        .setName("bet")
-        .setDescription("How much you wanna bet")
-        .setMinValue(0)
-        .setMaxValue(500)
-        .setRequired(true)
-    ),
+    .addIntegerOption(BetAmountOption),
   async execute(interaction) {
-    const playerBet = interaction.options.getNumber("bet", true);
+    const playerBet = interaction.options.getInteger("bet", true);
 
     const response = await interaction.reply({
       content: "Rock, paper, scissors, shoot!",

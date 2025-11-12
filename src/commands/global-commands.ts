@@ -1,10 +1,11 @@
 import { Collection } from "discord.js";
 import { SlashCommand } from "./SlashCommand";
-import { rpsCommand } from "./games/rps";
+import { rpsCommand as rpsGameCommand } from "./games/rps";
+import { diceGameCommand } from "./games/dice";
 
 const commands = new Collection<string, SlashCommand>();
 
-[rpsCommand].forEach((command) => {
+[rpsGameCommand, diceGameCommand].forEach((command) => {
   commands.set(command.data.name, command);
 });
 
