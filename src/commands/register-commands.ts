@@ -1,18 +1,16 @@
 import { REST, Routes } from "discord.js";
-import commands from "../commands/global-commands";
-import { applicationId, token } from "../util/environment";
+import { applicationId, guildId, token } from "../util/environment";
+import commands from "./global-commands";
 
-async function registerGlobalCommands() {
+export async function registerCommands() {
   const rest = new REST().setToken(token);
 
   try {
     const body = commands.map((cmd) => cmd.data.toJSON());
-    await rest.put(Routes.applicationCommands(applicationId), {
+    await rest.put(Routes.applicationGuildCommands(applicationId, guildId), {
       body,
     });
   } catch (error) {
     console.error(`Failed to register commands: ${error}`);
   }
 }
-
-registerGlobalCommands();
