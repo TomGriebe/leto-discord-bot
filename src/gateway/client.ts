@@ -1,9 +1,15 @@
-import { Client, Events, MessageFlags } from "discord.js";
+import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import commands from "../commands/global-commands";
 import { token } from "../util/environment";
 
 export function createGatewayClient(): Client {
-  const client = new Client({ intents: [] });
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
 
   client.once(Events.ClientReady, (readyClient) => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
