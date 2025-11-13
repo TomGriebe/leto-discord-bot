@@ -19,4 +19,35 @@ export async function createUserIfNotExists(userId: string, serverId: string) {
   }
 }
 
-export async function addBalance(userId: string, delta: number) {}
+export async function addBalance(
+  discordId: string,
+  serverId: string,
+  delta: number
+) {
+  const userRepo = AppDataSource.getRepository(ServerUser);
+
+  const user = await getServerUser(discordId, serverId);
+  user.balance = Math.max(0, user.balance + delta);
+
+  await userRepo.save(user);
+}
+
+export async function getBalance(
+  discordId: string,
+  serverId: string
+): Promise<number> {
+  const user = await getServerUser(discordId, serverId);
+  return user.balance;
+}
+
+async function getServerUser(
+  discordId: string,
+  serverId: string
+): Promise<ServerUser> {
+  const userRepo = AppDataSource.getRepository(ServerUser);
+
+  return await userRepo.findOneBy({
+    discordId,
+    server: { discordId: serverId },
+  });
+}
