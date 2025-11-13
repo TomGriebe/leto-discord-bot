@@ -10,31 +10,51 @@ import {
 } from "../../user/user-cooldown.service";
 import { SlashCommandHandler } from "../SlashCommand";
 
+interface GamblingHandlerOptions {
+  resultAsNewMessage: boolean;
+}
+
 export function handleGambling(
-  gameLogic: SlashCommandHandler<number>
+  gameLogic: SlashCommandHandler<number>,
+  options: Partial<GamblingHandlerOptions> = {}
 ): SlashCommandHandler {
   return async (interaction: ChatInputCommandInteraction) => {
-    await checkCooldown(interaction);
-    if (interaction.replied) return;
-
     await checkBalance(interaction);
     if (interaction.replied) return;
 
-    const payout = await gameLogic(interaction);
+    await checkCooldown(interaction);
+    if (interaction.replied) return;
 
-    if (!interaction.replied) {
-      await interaction.reply("The game is finished!");
+    try {
+      let result = "";
+      const payout = await gameLogic(interaction);
+
+      if (payout > 0) {
+        result = `You win **${payout} coins**!`;
+      } else if (payout < 0) {
+        result = `You lost **${-payout} coins**!`;
+      } else {
+        result = "It's a draw! You get back your bet!";
+      }
+
+      if (options.resultAsNewMessage === true) {
+        await interaction.channel.send(result);
+      } else if (!interaction.replied) {
+        await interaction.reply(result);
+      } else {
+        await interaction.editReply(result);
+      }
+
+      await addBalance(interaction.user.id, interaction.guildId, payout);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (!interaction.replied) {
+          await interaction.reply(error.message);
+        } else {
+          await interaction.editReply(error.message);
+        }
+      }
     }
-
-    if (payout > 0) {
-      await interaction.editReply(`You win **${payout} coins**!`);
-    } else if (payout < 0) {
-      await interaction.editReply(`You lost **${-payout} coins**!`);
-    } else {
-      await interaction.editReply("It's a draw! You get back your bet!");
-    }
-
-    await addBalance(interaction.user.id, interaction.guildId, payout);
   };
 }
 
