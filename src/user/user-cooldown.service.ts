@@ -19,7 +19,7 @@ export async function getRemainingMinigameCooldown(
     return Infinity;
   }
 
-  const cooldown = await cooldownRepo.findOneBy({ user });
+  const cooldown = await cooldownRepo.findOneBy({ user, action: game });
 
   if (!cooldown) {
     return 0;
