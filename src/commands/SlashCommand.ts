@@ -3,7 +3,11 @@ import {
   SlashCommandOptionsOnlyBuilder,
 } from "discord.js";
 
+export type SlashCommandHandler<R = void> = (
+  interaction: ChatInputCommandInteraction
+) => Promise<R>;
+
 export interface SlashCommand {
   data: SlashCommandOptionsOnlyBuilder;
-  execute(interaction: ChatInputCommandInteraction): Promise<void>;
+  execute: SlashCommandHandler;
 }

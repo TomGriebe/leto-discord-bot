@@ -24,6 +24,8 @@ export async function addBalance(
   serverId: string,
   delta: number
 ) {
+  if (delta === 0) return;
+
   const userRepo = AppDataSource.getRepository(ServerUser);
 
   const user = await findServerUser(discordId, serverId);

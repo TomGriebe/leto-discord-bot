@@ -1,17 +1,9 @@
+import { randomInt } from "crypto";
 import { SlashCommandBuilder } from "discord.js";
+import { delay } from "../../util/delay";
+import { handleGambling } from "../blueprints/gambling";
 import { SlashCommand } from "../SlashCommand";
 import { BetAmountOption } from "./shared";
-import { randomInt } from "crypto";
-import { delay } from "../../util/delay";
-import { addBalance, getBalance } from "../../user/server-user.service";
-import {
-  ACTION_ON_COOLDOWN,
-  BET_INSUFFICIENT_FUNDS,
-} from "../../constants/messages";
-import {
-  getRemainingMinigameCooldown,
-  setMinigameCooldown,
-} from "../../user/user-cooldown.service";
 
 export const diceGameCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -19,70 +11,38 @@ export const diceGameCommand: SlashCommand = {
     .setDescription("My favorite game :)")
     .addIntegerOption(BetAmountOption),
 
-  async execute(interaction) {
-    const userId = interaction.user.id;
-    const serverId = interaction.guild.id;
-
-    const cooldown = await getRemainingMinigameCooldown(
-      userId,
-      serverId,
-      "dice"
-    );
-
-    if (cooldown > 0) {
-      await interaction.reply(ACTION_ON_COOLDOWN(cooldown));
-      return;
-    } else {
-      await setMinigameCooldown(userId, serverId, "dice");
-    }
-
-    const playerBalance = await getBalance(userId, serverId);
+  execute: handleGambling(async (interaction) => {
     const playerBet = interaction.options.getInteger("bet", true);
 
-    if (playerBet > playerBalance) {
-      await interaction.reply(BET_INSUFFICIENT_FUNDS);
-      return;
-    }
+    await interaction.reply(
+      "🎲 Welcome to the dice game! 🎲\nYou and me roll 2 dice each, highest score wins. Let's begin!"
+    );
+    await delay(2000);
 
     const playerDice: [number, number] = [getRandomDie(), getRandomDie()];
     const botDice: [number, number] = [getRandomDie(), getRandomDie()];
+
     const playerScore = playerDice[0] + playerDice[1];
     const botScore = botDice[0] + botDice[1];
 
-    await interaction.reply(
-      `🎲 You've rolled a ${playerDice[0]} and ${playerDice[1]}!`
+    await interaction.editReply(
+      `🎲 You've rolled a **${playerDice[0]}** and **${playerDice[1]}**!`
     );
     await delay(2000);
 
     await interaction.editReply(
-      `🎲 I've rolled a ${botDice[0]} and ${botDice[1]}!`
+      `🎲 I've rolled a **${botDice[0]}** and **${botDice[1]}**!`
     );
     await delay(2000);
 
-    let payout = 0;
-    let resultMsg = "";
-
     if (playerScore > botScore) {
-      payout = playerBet;
-      resultMsg = `You won **${playerBet} coins**! 🎉`;
+      return playerBet;
     } else if (playerScore < botScore) {
-      payout = -playerBet;
-      resultMsg = `You lost **${playerBet} coins**, fricking loser 👎`;
+      return -playerBet;
     } else {
-      resultMsg = `It's a draw! You get back your **${playerBet} coins** 🙃`;
+      return 0;
     }
-
-    await interaction.editReply(resultMsg);
-
-    if (payout !== 0) {
-      try {
-        await addBalance(userId, interaction.guildId, payout);
-      } catch (error) {
-        console.error("Error while updating user balance:", error);
-        await interaction.editReply("We've had trouble paying out, sorry!");
-      }
-    }
-  },
+  }),
 };
 
 function getRandomDie(): number {
