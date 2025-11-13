@@ -1,3 +1,4 @@
+import { randomInt } from "crypto";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -5,8 +6,9 @@ import {
   Interaction,
   SlashCommandBuilder,
 } from "discord.js";
+import { delay } from "../../util/delay";
+import { handleGambling } from "../blueprints/gambling";
 import { SlashCommand } from "../SlashCommand";
-import { randomInt } from "crypto";
 import { BetAmountOption } from "./shared";
 
 type RPSAnswer = "rock" | "paper" | "scissors";
@@ -16,16 +18,17 @@ export const rpsCommand: SlashCommand = {
     .setName("rps")
     .setDescription("Play rock, paper, scissors with me!")
     .addIntegerOption(BetAmountOption),
-  async execute(interaction) {
+
+  execute: handleGambling(async (interaction) => {
     const playerBet = interaction.options.getInteger("bet", true);
 
-    const response = await interaction.reply({
+    const gamePrompt = await interaction.reply({
       content: "Rock, paper, scissors, shoot!",
       components: [getActionRow().toJSON()],
       withResponse: true,
     });
 
-    const answer = await response.resource?.message?.awaitMessageComponent({
+    const answer = await gamePrompt.resource?.message?.awaitMessageComponent({
       filter: rootInteractionUserId(interaction),
       time: 60_000,
     });
@@ -38,27 +41,14 @@ export const rpsCommand: SlashCommand = {
     const botAnswer = getRandomAnswer();
     const rpsResult = evaluateRps(playerAnswer, botAnswer);
 
-    const resultDisplay = await answer.update({
+    await interaction.editReply({
       content: `You played ${idToEmoji(playerAnswer)}, I played ${idToEmoji(botAnswer)}`,
       components: [],
     });
 
-    await new Promise((res) => setTimeout(res, 2_000));
-
-    if (rpsResult > 0) {
-      await resultDisplay.edit({
-        content: `You won **${playerBet} coins**! 🎉`,
-      });
-    } else if (rpsResult < 0) {
-      await resultDisplay.edit({
-        content: `You lost **${playerBet} coins**, fricking loser 👎`,
-      });
-    } else {
-      await resultDisplay.edit({
-        content: `It's a draw! You get back your **${playerBet} coins** 🙃`,
-      });
-    }
-  },
+    await delay(2000);
+    return playerBet * rpsResult;
+  }),
 };
 
 function getActionRow() {
