@@ -10,6 +10,7 @@ export async function registerCommands() {
     await rest.put(Routes.applicationGuildCommands(applicationId, guildId), {
       body,
     });
+    console.info("Registered commands!");
   } catch (error) {
     console.error(`Failed to register commands: ${error}`);
   }

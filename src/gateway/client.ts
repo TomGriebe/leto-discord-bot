@@ -12,7 +12,7 @@ export function createGatewayClient(): Client {
   });
 
   client.once(Events.ClientReady, (readyClient) => {
-    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+    console.log(`Logged in as ${readyClient.user.tag}`);
   });
 
   return client;
@@ -43,6 +43,6 @@ export function addCommandHandlers(client: Client) {
   });
 }
 
-export function runGateway(client: Client) {
-  client.login(token);
+export async function runGateway(client: Client) {
+  await client.login(token);
 }
