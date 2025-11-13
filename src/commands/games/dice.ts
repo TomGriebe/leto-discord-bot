@@ -4,7 +4,14 @@ import { BetAmountOption } from "./shared";
 import { randomInt } from "crypto";
 import { delay } from "../../util/delay";
 import { addBalance, getBalance } from "../../user/server-user.service";
-import { BET_INSUFFICIENT_FUNDS } from "../../constants/messages";
+import {
+  ACTION_ON_COOLDOWN,
+  BET_INSUFFICIENT_FUNDS,
+} from "../../constants/messages";
+import {
+  getRemainingMinigameCooldown,
+  setMinigameCooldown,
+} from "../../user/user-cooldown.service";
 
 export const diceGameCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -15,6 +22,19 @@ export const diceGameCommand: SlashCommand = {
   async execute(interaction) {
     const userId = interaction.user.id;
     const serverId = interaction.guild.id;
+
+    const cooldown = await getRemainingMinigameCooldown(
+      userId,
+      serverId,
+      "dice"
+    );
+
+    if (cooldown > 0) {
+      await interaction.reply(ACTION_ON_COOLDOWN(cooldown));
+      return;
+    } else {
+      await setMinigameCooldown(userId, serverId, "dice");
+    }
 
     const playerBalance = await getBalance(userId, serverId);
     const playerBet = interaction.options.getInteger("bet", true);

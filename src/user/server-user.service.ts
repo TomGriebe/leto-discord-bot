@@ -26,7 +26,7 @@ export async function addBalance(
 ) {
   const userRepo = AppDataSource.getRepository(ServerUser);
 
-  const user = await getServerUser(discordId, serverId);
+  const user = await findServerUser(discordId, serverId);
   user.balance = Math.max(0, user.balance + delta);
 
   await userRepo.save(user);
@@ -36,11 +36,11 @@ export async function getBalance(
   discordId: string,
   serverId: string
 ): Promise<number> {
-  const user = await getServerUser(discordId, serverId);
+  const user = await findServerUser(discordId, serverId);
   return user.balance;
 }
 
-async function getServerUser(
+export async function findServerUser(
   discordId: string,
   serverId: string
 ): Promise<ServerUser> {
