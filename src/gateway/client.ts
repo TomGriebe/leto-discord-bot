@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import commands from "../commands/global-commands";
+import { createUserIfNotExists } from "../user/server-user.service";
 import { token } from "../util/environment";
 
 export function createGatewayClient(): Client {
@@ -12,7 +13,7 @@ export function createGatewayClient(): Client {
   });
 
   client.once(Events.ClientReady, (readyClient) => {
-    console.log(`Logged in as ${readyClient.user.tag}`);
+    console.info(`Logged in as ${readyClient.user.tag}`);
   });
 
   return client;
@@ -29,9 +30,19 @@ export function addCommandHandlers(client: Client) {
     }
 
     try {
+      await createUserIfNotExists(interaction.user.id, interaction.guildId);
+    } catch (error) {
+      console.error("Failed to create user in database:", error);
+      await interaction.reply(
+        "We've run into an issue, please try again later!"
+      );
+      return;
+    }
+
+    try {
       command.execute(interaction);
     } catch (error) {
-      console.error(`Error while executing ${command.data.name}: ${error}`);
+      console.error(`Error while executing ${command.data.name}:`, error);
       const content = "There was an error while executing this command!";
 
       if (interaction.replied || interaction.deferred) {
