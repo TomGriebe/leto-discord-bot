@@ -3,7 +3,7 @@ import { SlashCommand } from "./SlashCommand";
 import { rpsCommand as rpsGameCommand } from "./games/rps";
 import { diceGameCommand } from "./games/dice";
 import { guessGameCommand } from "./games/guess";
-import { balanceCommand } from "./shop/balance";
+import { balanceCommand } from "./money/balance";
 
 const commands = new Collection<string, SlashCommand>();
 
