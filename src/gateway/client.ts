@@ -1,5 +1,5 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
-import commands from "../commands/global-commands";
+import commands from "../commands/commands";
 import { createUserIfNotExists } from "../user/server-user.service";
 import { token } from "../util/environment";
 

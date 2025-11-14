@@ -1,6 +1,6 @@
 import { REST, Routes } from "discord.js";
 import { applicationId, guildId, token } from "../util/environment";
-import commands from "./global-commands";
+import commands from "./commands";
 
 export async function registerCommands() {
   const rest = new REST().setToken(token);
