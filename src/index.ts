@@ -9,14 +9,14 @@ import {
 } from "./gateway/client";
 
 async function main() {
+  console.info("Initializing DB connection...");
+  await AppDataSource.initialize();
+  console.info("DB connection initialized!");
+
   await registerCommands();
   const client = createGatewayClient();
   addCommandHandlers(client);
   await runGateway(client);
-
-  console.info("Initializing DB connection...");
-  await AppDataSource.initialize();
-  console.info("DB connection initialized!");
 }
 
 main().catch(console.error);
