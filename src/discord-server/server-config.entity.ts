@@ -6,9 +6,7 @@ export class ServerConfig {
   @PrimaryColumn()
   serverId: string;
 
-  @OneToOne(() => DiscordServer, (server) => server.config, {
-    onDelete: "CASCADE",
-  })
+  @OneToOne(() => DiscordServer, (server) => server.config, { cascade: true })
   @JoinColumn({ name: "serverId" })
   server: DiscordServer;
 

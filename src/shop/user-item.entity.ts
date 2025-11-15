@@ -10,9 +10,9 @@ export class UserItem {
   @Column({ type: "int", default: 1 })
   amount: number;
 
-  @ManyToOne(() => ServerUser, (user) => user.items, { onDelete: "CASCADE" })
+  @ManyToOne(() => ServerUser, (user) => user.items, { cascade: true })
   user: ServerUser;
 
-  @ManyToOne(() => ShopItem, (item) => item.userItems, { onDelete: "CASCADE" })
+  @ManyToOne(() => ShopItem, (item) => item.userItems, { cascade: true })
   item: ShopItem;
 }

@@ -29,7 +29,7 @@ export class ShopItem {
   userItems: UserItem[];
 
   @ManyToOne(() => DiscordServer, (server) => server.shopItems, {
-    onDelete: "CASCADE",
+    cascade: true,
   })
   server: DiscordServer;
 }
