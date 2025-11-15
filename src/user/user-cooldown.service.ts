@@ -1,6 +1,5 @@
 import { AppDataSource } from "../data-source";
 import { ServerConfig } from "../discord-server/server-config.entity";
-import { ServerUser } from "./server-user.entity";
 import { findServerUser } from "./server-user.service";
 import { UserCooldown } from "./user-cooldown.entity";
 
@@ -26,7 +25,7 @@ export async function getRemainingMinigameCooldown(
   }
 
   const timePassed = Date.now() - cooldown.lastUsedAt.valueOf();
-  return Math.max(0, serverConfig.minigameTimeout - timePassed / 1000);
+  return Math.max(0, serverConfig.minigameTimeout - timePassed);
 }
 
 export async function setMinigameCooldown(
