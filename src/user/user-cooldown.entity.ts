@@ -12,8 +12,6 @@ export class UserCooldown {
   @Column({ type: "timestamptz" })
   lastUsedAt: Date;
 
-  @ManyToOne(() => ServerUser, (user) => user.cooldowns, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => ServerUser, (user) => user.cooldowns, { cascade: true })
   user: ServerUser;
 }

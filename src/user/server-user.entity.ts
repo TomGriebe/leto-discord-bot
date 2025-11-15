@@ -17,17 +17,18 @@ export class ServerUser {
   @Column()
   discordId: string;
 
-  @Column({ type: "int" })
+  @Column({ type: "int", default: 0 })
   balance: number;
+
+  @Column({ type: "int", default: 0 })
+  nextSalary: number;
 
   @OneToMany(() => UserCooldown, (cooldown) => cooldown.user)
   cooldowns: UserCooldown[];
 
   @OneToMany(() => UserItem, (item) => item.user)
-  items: UserItem;
+  items: UserItem[];
 
-  @ManyToOne(() => DiscordServer, (server) => server.users, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => DiscordServer, (server) => server.users, { cascade: true })
   server: DiscordServer;
 }
